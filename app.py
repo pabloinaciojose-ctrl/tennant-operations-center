@@ -66,11 +66,15 @@ try:
 except Exception:
     url_onedrive = ""
 
-df = carregar_planilha(
-    arquivo_enviado=arquivo_enviado,
-    url_onedrive=url_onedrive
-)
-
+try:
+    df = carregar_planilha(
+        arquivo_enviado=arquivo_enviado,
+        url_onedrive=url_onedrive
+    )
+except Exception as erro:
+    st.error("Não foi possível carregar a planilha do OneDrive.")
+    st.info("Verifique se o link permite download sem login, ou carregue a planilha manualmente pelo botão Upload.")
+    st.stop()
 if df is None:
     st.warning("Carregue uma planilha do Protheus ou configure o link do OneDrive.")
     st.stop()
