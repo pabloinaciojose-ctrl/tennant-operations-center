@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-
+from streamlit_autorefresh import st_autorefresh
 from dashboard.leitura import carregar_planilha
 from dashboard.indicadores import calcular_indicadores
 from dashboard.componentes import cabecalho, cards_principais, cards_pedidos
@@ -11,6 +11,11 @@ st.set_page_config(
     page_title="Tennant Operations Center",
     page_icon="📦",
     layout="wide"
+)
+
+st_autorefresh(
+    interval=60000,
+    key="atualizacao_dashboard"
 )
 
 st.sidebar.title("📦 Tennant")
@@ -56,10 +61,18 @@ arquivo_enviado = st.sidebar.file_uploader(
     type=["xlsx"]
 )
 
-df = carregar_planilha(arquivo_enviado)
+try:
+    url_onedrive = st.secrets["ONEDRIVE_EXCEL_URL"]
+except Exception:
+    url_onedrive = ""
+
+df = carregar_planilha(
+    arquivo_enviado=arquivo_enviado,
+    url_onedrive=url_onedrive
+)
 
 if df is None:
-    st.warning("Carregue uma planilha do Protheus para iniciar o dashboard.")
+    st.warning("Carregue uma planilha do Protheus ou configure o link do OneDrive.")
     st.stop()
 
 kpi = calcular_indicadores(df)
