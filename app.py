@@ -81,6 +81,24 @@ if df is None:
 
 kpi = calcular_indicadores(df)
 
+# =========================
+# CONTROLE DE ATUALIZAÇÃO DA PLANILHA
+# =========================
+
+assinatura_planilha = str(
+    pd.util.hash_pandas_object(
+        df.fillna("").astype(str),
+        index=True
+    ).sum()
+)
+
+if "assinatura_planilha" not in st.session_state:
+    st.session_state["assinatura_planilha"] = assinatura_planilha
+
+if st.session_state["assinatura_planilha"] != assinatura_planilha:
+    st.session_state["assinatura_planilha"] = assinatura_planilha
+    st.session_state["pedidos_prioridade"] = set()
+
 cabecalho()
 cards_principais(kpi)
 
